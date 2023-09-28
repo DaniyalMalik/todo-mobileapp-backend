@@ -1,7 +1,5 @@
 const Response = require('../models/Response'),
-  StatusCode = require('../models/StatusCode'),
   Todo = require('../models/Todo'),
-  Response = require('../models/Response'),
   StatusCode = require('../models/StatusCode');
 
 // Add a todo

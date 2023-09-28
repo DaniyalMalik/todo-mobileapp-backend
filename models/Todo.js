@@ -15,7 +15,7 @@ const MongooseSchema = new mongoose.Schema(
             default: false
         },
         userId: {
-            type: Schema.Types.ObjectId,
+            type: mongoose.Schema.Types.ObjectId,
             ref: 'User',
             required: [true, "User's id is required!"],
           },

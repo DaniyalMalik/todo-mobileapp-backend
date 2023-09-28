@@ -4,7 +4,9 @@ const express = require('express'),
   app = express(),
   dotenv = require('dotenv'),
   cors = require('cors'),
+  authRoutes = require('./routes/auth'),
   userRoutes = require('./routes/user'),
+  todoRoutes = require('./routes/todo'),
   connectDB = require('./config/db'),
   morgan = require('morgan'),
   xss = require('xss-clean'),
@@ -40,8 +42,10 @@ app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// user routes
-app.use('/api/auth', userRoutes);
+// routes
+app.use('/api/auth', authRoutes);
+app.use('/api/user', userRoutes);
+app.use('/api/todo', todoRoutes);
 
 app.use(error);
 

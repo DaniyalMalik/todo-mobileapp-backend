@@ -55,7 +55,7 @@ exports.updateMe = async (req, res, next) => {
   try {
     const { name, location } = req.body;
     const user = await User.findByIdAndUpdate(
-      req.params.id,
+      req.user.id,
       { name, location },
       {
         new: true,

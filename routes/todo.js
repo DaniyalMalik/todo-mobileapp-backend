@@ -5,7 +5,7 @@ const express = require('express'),
         updateTodo,
         getTodo,
         getMyTodos,
-    } = require('../controllers/user'),
+    } = require('../controllers/todo'),
     protect = require('../middleware/auth');
 
 router.get('/', protect, getMyTodos);

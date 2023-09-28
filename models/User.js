@@ -11,13 +11,13 @@ const MongooseSchema = new mongoose.Schema(
     },
     email: {
       type: String,
+      required: [true, "Email is required!"],
       unique: [true, 'Email address already exists!'],
       // required: [true, "User's email address is required!"],
       match: [
         /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
         'Please enter a valid email address!',
       ],
-      default: '',
     },
     phoneNumber: {
       type: String,
@@ -27,6 +27,7 @@ const MongooseSchema = new mongoose.Schema(
     },
     password: {
       type: String,
+      required: [true, "Password is required!"],
       select: false,
     },
     resetPasswordToken: {

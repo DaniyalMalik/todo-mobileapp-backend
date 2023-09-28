@@ -4,17 +4,13 @@ const express = require('express'),
         register,
         login,
         socialLogin,
-        forgotPassword,
-        resetPassword,
         changePassword,
-    } = require('../controllers/user'),
+    } = require('../controllers/auth'),
     protect = require('../middleware/auth');
 
 router.post('/register', register);
 router.post('/login', login);
 router.post('/sociallogin', socialLogin);
-router.post('/forgotpassword', forgotPassword);
-router.post('/resetpassword', resetPassword);
 router.put('/password', protect, changePassword);
 
 module.exports = router;
