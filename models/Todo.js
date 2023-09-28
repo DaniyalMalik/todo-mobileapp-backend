@@ -12,8 +12,13 @@ const MongooseSchema = new mongoose.Schema(
         },
         done: {
             type: Boolean,
-            required: [true, "Done is required!"],
+            default: false
         },
+        userId: {
+            type: Schema.Types.ObjectId,
+            ref: 'User',
+            required: [true, "User's id is required!"],
+          },
     },
     { timestamps: true },
 );

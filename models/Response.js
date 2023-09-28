@@ -2,6 +2,7 @@ class ResponseModel {
   data = {};
   isSuccess = false;
   isServerError = false;
+  isNotFound = false;
   isUnAuthorized = false;
   isTokenExpired = false;
   message = '';
@@ -36,6 +37,11 @@ class ResponseModel {
 
   setUnAuthorized(message) {
     this.isUnAuthorized = true;
+    this.message = message;
+  }
+
+  setNotFound(message) {
+    this.isNotFound = true;
     this.message = message;
   }
 

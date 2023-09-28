@@ -6,7 +6,10 @@ class StatusCodeModel {
       return statusCodes.success;
     } else if (responseObject.isUnAuthorized) {
       return statusCodes.unAuthorized;
-    } else if (responseObject.isServerError) {
+    } else if (responseObject.isNotFound) {
+      return statusCodes.notFound;
+    }
+    else if (responseObject.isServerError) {
       return statusCodes.server;
     } else {
       return statusCodes.badRequest;
