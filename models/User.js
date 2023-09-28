@@ -7,7 +7,7 @@ const MongooseSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: [true, "User's name is required!"],
+      required: [true, "Name is required!"],
     },
     email: {
       type: String,
@@ -29,26 +29,6 @@ const MongooseSchema = new mongoose.Schema(
       type: String,
       select: false,
     },
-    isEmailVerified: {
-      type: Boolean,
-      default: false,
-    },
-    isPhoneNumberVerified: {
-      type: Boolean,
-      default: false,
-    },
-    streak: {
-      type: Number,
-      default: 0,
-    },
-    location: {
-      type: String,
-      default: '',
-    },
-    fcmToken: {
-      type: String,
-      default: '',
-    },
     resetPasswordToken: {
       type: String,
       select: false,
@@ -56,34 +36,6 @@ const MongooseSchema = new mongoose.Schema(
     resetPasswordTokenExpiry: {
       type: Date,
       select: false,
-    },
-    verifyEmailToken: {
-      type: String,
-      select: false,
-    },
-    verifyEmailTokenExpiry: {
-      type: Date,
-      select: false,
-    },
-    verifyMessageToken: {
-      type: String,
-      select: false,
-    },
-    verifyMessageTokenExpiry: {
-      type: Date,
-      select: false,
-    },
-    socialLoginToken: {
-      type: String,
-      select: false,
-    },
-    rating: {
-      type: Number,
-      default: 0,
-    },
-    review: {
-      type: String,
-      default: '',
     },
   },
   { timestamps: true },

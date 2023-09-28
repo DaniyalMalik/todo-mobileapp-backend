@@ -4,10 +4,7 @@ const express = require('express'),
   app = express(),
   dotenv = require('dotenv'),
   cors = require('cors'),
-  userAdminRoutes = require('./routes/admin/user'),
-  authAdminRoutes = require('./routes/admin/authAdmin'),
-  adminRoutes = require('./routes/admin/admin'),
-  authRoutes = require('./routes/user/authUser'),
+  userRoutes = require('./routes/user'),
   connectDB = require('./config/db'),
   morgan = require('morgan'),
   xss = require('xss-clean'),
@@ -43,19 +40,8 @@ app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// admin routes
-// app.use('/api/admin/auth', authAdminRoutes);
-// app.use('/api/admin/admins', adminRoutes);
-// app.use('/api/admin/sessions', sessionAdminRoutes);
-// app.use('/api/admin/users', userAdminRoutes);
-// app.use('/api/admin/tips', tipAdminRoutes);
-// app.use('/api/admin/notifications', notificationAdminRoutes);
-
 // user routes
-// app.use('/api/auth', authRoutes);
-// app.use('/api/sessions', sessionRoutes);
-// app.use('/api/tips', tipRoutes);
-// app.use('/api/notifications', notificationRoutes);
+app.use('/api/auth', userRoutes);
 
 app.use(error);
 

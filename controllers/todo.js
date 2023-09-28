@@ -1,9 +1,91 @@
-const mongoose = require('mongoose'),
-  User = require('../../models/User'),
-  sendEmail = require('../../utils/sendEmail'),
-  Response = require('../../models/Response'),
-  StatusCode = require('../../models/StatusCode'),
+const Response = require('../models/Response'),
+  StatusCode = require('../models/StatusCode'),
+  mongoose = require('mongoose'),
+  User = require('../models/User'),
+  sendEmail = require('../utils/sendEmail'),
+  Response = require('../models/Response'),
+  StatusCode = require('../models/StatusCode'),
   crypto = require('crypto');
+
+// Update user
+exports.updateUser = async (req, res, next) => {
+  const response = new Response();
+
+  try {
+    const { name, location } = req.body;
+    const user = await User.findByIdAndUpdate(
+      req.params.id,
+      { name, location },
+      {
+        new: true,
+        useFindAndModify: false,
+      },
+    );
+
+    response.setSuccessAndDataWithMessage(
+      { user },
+      'User updated successfully!',
+    );
+
+    const { ...responseObj } = response;
+
+    res.status(StatusCode.getStatusCode(responseObj)).json(responseObj);
+  } catch (error) {
+    console.log(error);
+
+    response.setServerError(error);
+
+    const { ...responseObj } = response;
+
+    res.status(StatusCode.getStatusCode(responseObj)).json(responseObj);
+  }
+};
+
+// Get user
+exports.getUser = async (req, res, next) => {
+  const response = new Response();
+
+  try {
+    const user = await User.findById(req.params.id);
+
+    response.setSuccessAndData({ user });
+
+    const { ...responseObj } = response;
+
+    res.status(StatusCode.getStatusCode(responseObj)).json(responseObj);
+  } catch (error) {
+    console.log(error);
+
+    response.setServerError(error);
+
+    const { ...responseObj } = response;
+
+    res.status(StatusCode.getStatusCode(responseObj)).json(responseObj);
+  }
+};
+
+// Get all users
+exports.getAllUsersList = async (req, res, next) => {
+  const response = new Response();
+
+  try {
+    const users = await User.find().sort('name');
+
+    response.setSuccessAndData({ users });
+
+    const { ...responseObj } = response;
+
+    res.status(StatusCode.getStatusCode(responseObj)).json(responseObj);
+  } catch (error) {
+    console.log(error);
+
+    response.setServerError(error);
+
+    const { ...responseObj } = response;
+
+    res.status(StatusCode.getStatusCode(responseObj)).json(responseObj);
+  }
+};
 
 // Register a user
 exports.register = async (req, res, next) => {
@@ -181,189 +263,6 @@ exports.socialLogin = async (req, res, next) => {
   }
 };
 
-// Send verification email
-exports.sendEmail = async (req, res, next) => {
-  const response = new Response();
-
-  try {
-    const user = await User.findOne({ email: req.query.email });
-
-    if (!user) {
-      response.setError('User does not exist!');
-
-      const { ...responseObj } = response;
-
-      return res
-        .status(StatusCode.getStatusCode(responseObj))
-        .json(responseObj);
-    }
-
-    const resetToken = await user.getVerifyEmailToken();
-    const resetUrl = `${resetToken}`;
-    const message = `Enter the Following reset code in your mobile app: \n${resetUrl}`;
-
-    // await sendEmail({
-    //   email: user.email,
-    //   subject: 'Verification Code',
-    //   message,
-    // });
-
-    response.setSuccess('Verification email was sent successfully!');
-
-    const { ...responseObj } = response;
-
-    res.status(StatusCode.getStatusCode(responseObj)).json(responseObj);
-  } catch (error) {
-    console.log(error);
-
-    response.setServerError(error);
-
-    const { ...responseObj } = response;
-
-    res.status(StatusCode.getStatusCode(responseObj)).json(responseObj);
-  }
-};
-
-// Verify email address
-exports.verifyEmail = async (req, res, next) => {
-  const response = new Response();
-
-  try {
-    const { resetToken, email } = req.body;
-    const verifyEmailToken = crypto
-      .createHash('sha256')
-      .update(resetToken)
-      .digest('hex');
-    const user = await User.findOne({
-      email,
-      verifyEmailToken,
-      verifyEmailTokenExpiry: { $gt: Date.now() },
-    });
-
-    if (!user) {
-      response.setError('Invalid Token!');
-
-      const { ...responseObj } = response;
-
-      return res
-        .status(StatusCode.getStatusCode(responseObj))
-        .json(responseObj);
-    }
-
-    user.isEmailVerified = true;
-    user.verifyEmailToken = '';
-    user.verifyEmailTokenExpiry = '';
-
-    await user.save({ validateBeforeSave: false });
-
-    response.setSuccess('Email Verified!');
-
-    const { ...responseObj } = response;
-
-    res.status(StatusCode.getStatusCode(responseObj)).json(responseObj);
-  } catch (error) {
-    console.log(error);
-
-    response.setServerError(error);
-
-    const { ...responseObj } = response;
-
-    res.status(StatusCode.getStatusCode(responseObj)).json(responseObj);
-  }
-};
-
-// Send verification message
-exports.sendMessage = async (req, res, next) => {
-  const response = new Response();
-
-  try {
-    const user = await User.findOne({
-      phoneNumber: '+' + req.query.phoneNumber,
-    });
-    if (!user) {
-      response.setError('User does not exist!');
-
-      const { ...responseObj } = response;
-
-      return res
-        .status(StatusCode.getStatusCode(responseObj))
-        .json(responseObj);
-    }
-
-    const resetToken = await user.getVerifyMessageToken();
-    const resetUrl = `${resetToken}`;
-    const message = `Enter the Following reset code in your mobile app: \n${resetUrl}`;
-
-    // await sendEmail({
-    //   email: user.email,
-    //   subject: 'Verification Code',
-    //   message,
-    // });
-
-    response.setSuccess('Verification email was sent successfully!');
-
-    const { ...responseObj } = response;
-
-    res.status(StatusCode.getStatusCode(responseObj)).json(responseObj);
-  } catch (error) {
-    console.log(error);
-
-    response.setServerError(error);
-
-    const { ...responseObj } = response;
-
-    res.status(StatusCode.getStatusCode(responseObj)).json(responseObj);
-  }
-};
-
-// Verify phone number
-exports.verifyPhoneNumber = async (req, res, next) => {
-  const response = new Response();
-
-  try {
-    const { resetToken, phoneNumber } = req.body;
-    const verifyMessageToken = crypto
-      .createHash('sha256')
-      .update(resetToken)
-      .digest('hex');
-    const user = await User.findOne({
-      phoneNumber,
-      verifyMessageToken,
-      verifyMessageTokenExpiry: { $gt: Date.now() },
-    });
-
-    if (!user) {
-      response.setError('Invalid Token!');
-
-      const { ...responseObj } = response;
-
-      return res
-        .status(StatusCode.getStatusCode(responseObj))
-        .json(responseObj);
-    }
-
-    user.isPhoneNumberVerified = true;
-    user.verifyMessageToken = '';
-    user.verifyMessageTokenExpiry = '';
-
-    await user.save({ validateBeforeSave: false });
-
-    response.setSuccess('Email Verified!');
-
-    const { ...responseObj } = response;
-
-    res.status(StatusCode.getStatusCode(responseObj)).json(responseObj);
-  } catch (error) {
-    console.log(error);
-
-    response.setServerError(error);
-
-    const { ...responseObj } = response;
-
-    res.status(StatusCode.getStatusCode(responseObj)).json(responseObj);
-  }
-};
-
 // Get current logged in user
 exports.getMe = async (req, res, next) => {
   const response = new Response();
@@ -372,46 +271,6 @@ exports.getMe = async (req, res, next) => {
     const user = await User.findById(req.user.id);
 
     response.setSuccessAndData({ user });
-
-    const { ...responseObj } = response;
-
-    res.status(StatusCode.getStatusCode(responseObj)).json(responseObj);
-  } catch (error) {
-    console.log(error);
-
-    response.setServerError(error);
-
-    const { ...responseObj } = response;
-
-    res.status(StatusCode.getStatusCode(responseObj)).json(responseObj);
-  }
-};
-
-// Update rating or review of logged in user
-exports.updateReviewAndRating = async (req, res, next) => {
-  const response = new Response();
-
-  try {
-    const { rating, review } = req.body;
-    const userTransaction = await mongoose.startSession();
-    let user;
-
-    await userTransaction.withTransaction(async () => {
-      const { rating: existingRating = '' } = await User.findById(req.user.id);
-      const calculateRating = existingRating
-        ? (rating + existingRating) / 2
-        : rating;
-
-      user = await User.findByIdAndUpdate(
-        req.user.id,
-        { rating: calculateRating, review },
-        { new: true, useFindAndModify: false },
-      );
-    });
-
-    userTransaction.endSession();
-
-    response.setSuccessAndDataWithMessage({ user }, 'Rated successfully!');
 
     const { ...responseObj } = response;
 

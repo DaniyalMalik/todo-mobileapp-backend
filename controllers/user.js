@@ -1,7 +1,8 @@
-const Admin = require('../../models/Admin'),
-  User = require('../../models/User'),
-  Response = require('../../models/Response'),
-  StatusCode = require('../../models/StatusCode');
+const Response = require('../models/Response'),
+  StatusCode = require('../models/StatusCode'),
+  mongoose = require('mongoose'),
+  User = require('../models/User'),
+  crypto = require('crypto');
 
 // Update user
 exports.updateUser = async (req, res, next) => {
@@ -60,40 +61,14 @@ exports.getUser = async (req, res, next) => {
   }
 };
 
-// Get all users with pagination
-exports.getAllUsersWithPagination = async (req, res, next) => {
+// Get all users
+exports.getAllUsersList = async (req, res, next) => {
   const response = new Response();
-  const { page, limit, search = '' } = req.query;
-  const offset = +page == 1 ? 0 : (+page - 1) * +limit;
 
   try {
-    const promises = [];
+    const users = await User.find().sort('name');
 
-    promises.push(
-      User.find({
-        $or: [
-          { name: { $regex: search, $options: 'i' } },
-          { email: { $regex: search, $options: 'i' } },
-          { phoneNumber: { $regex: search, $options: 'i' } },
-        ],
-      })
-        .sort('-createdAt')
-        .skip(+offset)
-        .limit(+limit),
-    );
-    promises.push(
-      User.countDocuments({
-        $or: [
-          { name: { $regex: search, $options: 'i' } },
-          { email: { $regex: search, $options: 'i' } },
-          { phoneNumber: { $regex: search, $options: 'i' } },
-        ],
-      }),
-    );
-
-    const result = await Promise.all(promises);
-
-    response.setSuccessAndData({ users: result[0], usersCount: result[1] });
+    response.setSuccessAndData({ users });
 
     const { ...responseObj } = response;
 
@@ -109,14 +84,75 @@ exports.getAllUsersWithPagination = async (req, res, next) => {
   }
 };
 
-// Get all users without pagination
-exports.getAllUsersList = async (req, res, next) => {
+// Get current logged in user
+exports.getMe = async (req, res, next) => {
   const response = new Response();
 
   try {
-    const users = await User.find().sort('name');
+    const user = await User.findById(req.user.id);
 
-    response.setSuccessAndData({ users });
+    response.setSuccessAndData({ user });
+
+    const { ...responseObj } = response;
+
+    res.status(StatusCode.getStatusCode(responseObj)).json(responseObj);
+  } catch (error) {
+    console.log(error);
+
+    response.setServerError(error);
+
+    const { ...responseObj } = response;
+
+    res.status(StatusCode.getStatusCode(responseObj)).json(responseObj);
+  }
+};
+
+// Update current logged in user
+exports.updateMe = async (req, res, next) => {
+  const response = new Response();
+
+  try {
+    const toUpd = req.body;
+
+    if (toUpd.email) {
+      const checkUserExists = await User.find({
+        email: toUpd.email,
+      });
+
+      if (checkUserExists) {
+        response.setError('Email address already exists!');
+
+        const { ...responseObj } = response;
+
+        return res
+          .status(StatusCode.getStatusCode(responseObj))
+          .json(responseObj);
+      }
+    } else if (toUpd.phoneNumber) {
+      const checkUserExists = await User.find({
+        phoneNumber: toUpd.phoneNumber,
+      });
+
+      if (checkUserExists) {
+        response.setError('Phone number already exists!');
+
+        const { ...responseObj } = response;
+
+        return res
+          .status(StatusCode.getStatusCode(responseObj))
+          .json(responseObj);
+      }
+    }
+
+    const user = await User.findByIdAndUpdate(req.user.id, toUpd, {
+      new: true,
+      useFindAndModify: false,
+    });
+
+    response.setSuccessAndDataWithMessage(
+      { user },
+      'User updated successfully!',
+    );
 
     const { ...responseObj } = response;
 
