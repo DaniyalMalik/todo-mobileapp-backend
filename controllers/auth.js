@@ -11,7 +11,7 @@ exports.register = async (req, res, next) => {
         const user = await User.create(payload);
         const token = user.getSignedJwtToken();
 
-        response.setSuccessAndDataWithMessage({ user, token }, 'User successfully registered!');
+        response.setSuccessAndDataWithMessage({ user, token }, 'Successfully registered!');
 
         const { ...responseObj } = response;
 
@@ -19,7 +19,7 @@ exports.register = async (req, res, next) => {
     } catch (error) {
         console.log(error);
 
-        response.setServerError(error);
+        response.setServerError(error.message);
 
         const { ...responseObj } = response;
 
@@ -32,8 +32,8 @@ exports.login = async (req, res, next) => {
     const response = new Response();
 
     try {
-        const { phoneNumber, password } = req.body;
-        let user = await User.findOne({ phoneNumber }).select('+password');
+        const { email, password } = req.body;
+        let user = await User.findOne({ email }).select('+password');
 
         if (!user) {
             response.setError('User does not exist!');
@@ -59,9 +59,9 @@ exports.login = async (req, res, next) => {
 
         const token = user.getSignedJwtToken();
 
-        user = await User.findOne({ phoneNumber });
+        user = await User.findOne({ email });
 
-        response.setSuccessAndDataWithMessage({ user, token }, 'User logged in!');
+        response.setSuccessAndDataWithMessage({ user, token }, 'Successfully logged in!');
 
         const { ...responseObj } = response;
 
@@ -69,7 +69,7 @@ exports.login = async (req, res, next) => {
     } catch (error) {
         console.log(error);
 
-        response.setServerError(error);
+        response.setServerError(error.message);
 
         const { ...responseObj } = response;
 
@@ -107,7 +107,7 @@ exports.socialLogin = async (req, res, next) => {
 
             const token = user.getSignedJwtToken();
 
-            response.setSuccessAndDataWithMessage({ user, token }, 'User logged in!');
+            response.setSuccessAndDataWithMessage({ user, token }, 'Successfully logged in!');
 
             const { ...responseObj } = response;
 
@@ -118,7 +118,7 @@ exports.socialLogin = async (req, res, next) => {
             const user = await User.create(userPayload);
             const token = user.getSignedJwtToken();
 
-            response.setSuccessAndDataWithMessage({ user, token }, 'User logged in!');
+            response.setSuccessAndDataWithMessage({ user, token }, 'Successfully logged in!');
 
             const { ...responseObj } = response;
 
@@ -127,7 +127,7 @@ exports.socialLogin = async (req, res, next) => {
     } catch (error) {
         console.log(error);
 
-        response.setServerError(error);
+        response.setServerError(error.message);
 
         const { ...responseObj } = response;
 
@@ -140,9 +140,9 @@ exports.changePassword = async (req, res, next) => {
     const response = new Response();
 
     try {
-        const updUser = req.body,
+        const { newPassword, oldPassword } = req.body,
             oldUser = await User.findById(req.user.id).select('password'),
-            matchPassword = await oldUser.matchPassword(updUser.oldPassword);
+            matchPassword = await oldUser.matchPassword(oldPassword);
 
         if (!matchPassword) {
             response.setError('Old password is incorrect!');
@@ -154,7 +154,7 @@ exports.changePassword = async (req, res, next) => {
                 .json(responseObj);
         }
 
-        oldUser.password = updUser.newPassword;
+        oldUser.password = newPassword;
 
         const user = await oldUser.save();
 
@@ -176,7 +176,7 @@ exports.changePassword = async (req, res, next) => {
     } catch (error) {
         console.log(error);
 
-        response.setServerError(error);
+        response.setServerError(error.message);
 
         const { ...responseObj } = response;
 

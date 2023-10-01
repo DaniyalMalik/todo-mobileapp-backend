@@ -33,7 +33,7 @@ module.exports = (req, res, next) => {
     if (error.message === 'jwt expired') {
       response.setTokenExpired(error.message);
     } else {
-      response.setServerError(error);
+      response.setServerError(error.message);
     }
 
     const { ...responseObj } = response;

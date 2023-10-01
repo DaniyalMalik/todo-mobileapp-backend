@@ -8,8 +8,7 @@ class StatusCodeModel {
       return statusCodes.unAuthorized;
     } else if (responseObject.isNotFound) {
       return statusCodes.notFound;
-    }
-    else if (responseObject.isServerError) {
+    } else if (responseObject.isServerError) {
       return statusCodes.server;
     } else {
       return statusCodes.badRequest;

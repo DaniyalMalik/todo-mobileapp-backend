@@ -15,7 +15,7 @@ const express = require('express'),
   error = require('./middleware/error'),
   mongoSanitize = require('express-mongo-sanitize');
 
-dotenv.config({ path: 'config/config.env' });
+dotenv.config({ path: 'config/.env' });
 
 // app.use(function (req, res, next) {
 //   res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
@@ -44,8 +44,8 @@ app.use(express.urlencoded({ extended: true }));
 
 // routes
 app.use('/api/auth', authRoutes);
-app.use('/api/user', userRoutes);
-app.use('/api/todo', todoRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/todos', todoRoutes);
 
 app.use(error);
 

@@ -19,9 +19,9 @@ exports.addTodo = async (req, res, next) => {
     //     .json(responseObj);
     // }
 
-    await Todo.create({ title, description, done });
+    const todo = await Todo.create({ title, description, done, userId: req.user.id });
 
-    response.setSuccess('Todo successfully created!');
+    response.setSuccessAndDataWithMessage(todo, 'Todo successfully created!');
 
     const { ...responseObj } = response;
 
@@ -29,7 +29,7 @@ exports.addTodo = async (req, res, next) => {
   } catch (error) {
     console.log(error, 'error');
 
-    response.setServerError(error);
+    response.setServerError(error.message);
 
     const { ...responseObj } = response;
 
@@ -63,7 +63,7 @@ exports.updateTodo = async (req, res, next) => {
   } catch (error) {
     console.log(error);
 
-    response.setServerError(error);
+    response.setServerError(error.message);
 
     const { ...responseObj } = response;
 
@@ -96,7 +96,7 @@ exports.getTodo = async (req, res, next) => {
   } catch (error) {
     console.log(error);
 
-    response.setServerError(error);
+    response.setServerError(error.message);
 
     const { ...responseObj } = response;
 
@@ -119,7 +119,7 @@ exports.getMyTodos = async (req, res, next) => {
   } catch (error) {
     console.log(error);
 
-    response.setServerError(error);
+    response.setServerError(error.message);
 
     const { ...responseObj } = response;
 

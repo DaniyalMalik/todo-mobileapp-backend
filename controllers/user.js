@@ -2,29 +2,6 @@ const Response = require('../models/Response'),
   StatusCode = require('../models/StatusCode'),
   User = require('../models/User');
 
-// Get all users
-exports.getAllUsersList = async (req, res, next) => {
-  const response = new Response();
-
-  try {
-    const users = await User.find().sort('name');
-
-    response.setSuccessAndData({ users });
-
-    const { ...responseObj } = response;
-
-    res.status(StatusCode.getStatusCode(responseObj)).json(responseObj);
-  } catch (error) {
-    console.log(error);
-
-    response.setServerError(error);
-
-    const { ...responseObj } = response;
-
-    res.status(StatusCode.getStatusCode(responseObj)).json(responseObj);
-  }
-};
-
 // Get current logged in user
 exports.getMe = async (req, res, next) => {
   const response = new Response();
@@ -40,7 +17,7 @@ exports.getMe = async (req, res, next) => {
   } catch (error) {
     console.log(error);
 
-    response.setServerError(error);
+    response.setServerError(error.message);
 
     const { ...responseObj } = response;
 
@@ -53,10 +30,10 @@ exports.updateMe = async (req, res, next) => {
   const response = new Response();
 
   try {
-    const { name, location } = req.body;
+    const updUser = req.body;
     const user = await User.findByIdAndUpdate(
       req.user.id,
-      { name, location },
+      updUser,
       {
         new: true,
         useFindAndModify: false,
@@ -65,7 +42,7 @@ exports.updateMe = async (req, res, next) => {
 
     response.setSuccessAndDataWithMessage(
       { user },
-      'User updated successfully!',
+      'Updated successfully!',
     );
 
     const { ...responseObj } = response;
@@ -74,7 +51,7 @@ exports.updateMe = async (req, res, next) => {
   } catch (error) {
     console.log(error);
 
-    response.setServerError(error);
+    response.setServerError(error.message);
 
     const { ...responseObj } = response;
 

@@ -10,6 +10,6 @@ const express = require('express'),
 
 router.get('/', protect, getMyTodos);
 router.route('/:id').get(protect, getTodo).put(protect, updateTodo);
-router.post('/register', addTodo);
+router.post('/', protect, addTodo);
 
 module.exports = router;
