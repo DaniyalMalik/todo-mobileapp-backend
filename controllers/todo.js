@@ -109,7 +109,8 @@ exports.getMyTodos = async (req, res, next) => {
   const response = new Response();
 
   try {
-    const todos = await Todo.find({ userId: req.user.id }).sort('name');
+    const todos = await Todo.find().sort('name');
+    // const todos = await Todo.find({ userId: req.user.id }).sort('name');
 
     response.setSuccessAndData({ todos });
 

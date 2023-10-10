@@ -8,8 +8,11 @@ const express = require('express'),
     } = require('../controllers/todo'),
     protect = require('../middleware/auth');
 
-router.get('/', protect, getMyTodos);
-router.route('/:id').get(protect, getTodo).put(protect, updateTodo);
-router.post('/', protect, addTodo);
+router.get('/', getMyTodos);
+// router.get('/', protect, getMyTodos);
+router.route('/:id').get(getTodo).put(updateTodo);
+// router.route('/:id').get(protect, getTodo).put(protect, updateTodo);
+router.post('/', addTodo);
+// router.post('/', protect, addTodo);
 
 module.exports = router;
